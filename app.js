@@ -255,7 +255,6 @@
   const perfLeaks = document.querySelector('#perfLeaks');
   const listenerState = document.querySelector('#listenerState');
   const performanceMessage = document.querySelector('#performanceMessage');
-  const chartStatus = document.querySelector('#chartStatus');
   const fpsChart = document.querySelector('#fpsChart');
   const performanceState = { history: [48, 52, 56, 60, 57, 59], sampleFrames: 0, sampleStart: 0, fps: 0, leaks: 0, listeners: 15 };
 
@@ -266,12 +265,11 @@
     if (now - performanceState.sampleStart >= 500) { performanceState.fps = Math.round(performanceState.sampleFrames * 1000 / (now - performanceState.sampleStart)); performanceState.history.push(performanceState.fps); performanceState.history = performanceState.history.slice(-18); performanceState.sampleFrames = 0; performanceState.sampleStart = now; buildChart(); }
     perfFps.textContent = performanceState.fps || '--'; perfMemory.textContent = `${estimateMemory()} MB`; perfListeners.textContent = performanceState.listeners + performanceState.leaks; perfLeaks.textContent = performanceState.leaks; deltaValue.textContent = `${Math.round(dt * 1000)} ms`;
   };
-  const analyzePerformance = () => { chartStatus.textContent = '¡Todo bien!'; performanceMessage.textContent = performanceState.fps >= 50 ? 'La nave viaja suave y estable.' : 'Necesitamos más datos: deja correr las órbitas.'; };
   const simulateLeak = () => { performanceState.leaks += 3; listenerState.textContent = 'hay señales por limpiar'; performanceMessage.textContent = 'Se simuló un problema para practicar la limpieza.'; updatePerformanceReading(0); };
   const cleanMemory = () => { performanceState.leaks = 0; listenerState.textContent = 'conectados'; performanceMessage.textContent = '¡Estrellas limpias! La nave quedó ordenada.'; updatePerformanceReading(0); };
   const stopRockets = () => { stopOrbits(); pauseSetup(); performanceMessage.textContent = 'Todos los cohetes se detuvieron con cancelAnimationFrame.'; };
-  const analyzeButton = document.querySelector('#analyzePerformance'); const leakButton = document.querySelector('#simulateLeak'); const cleanButton = document.querySelector('#cleanMemory'); const stopButton = document.querySelector('#stopRockets');
-  analyzeButton.addEventListener('click', analyzePerformance); leakButton.addEventListener('click', simulateLeak); cleanButton.addEventListener('click', cleanMemory); stopButton.addEventListener('click', stopRockets); buildChart(); updatePerformanceReading(0); startOrbits();
+  const leakButton = document.querySelector('#simulateLeak'); const cleanButton = document.querySelector('#cleanMemory'); const stopButton = document.querySelector('#stopRockets');
+  leakButton.addEventListener('click', simulateLeak); cleanButton.addEventListener('click', cleanMemory); stopButton.addEventListener('click', stopRockets); buildChart(); updatePerformanceReading(0); startOrbits();
   // #endregion PASO 5
 
   // ==========================================
@@ -301,7 +299,6 @@
     document.querySelector('#particleStop').removeEventListener('click', stopOrbits);
     document.querySelector('#particleAdd').removeEventListener('click', addPlanet);
     document.querySelector('#gravityButton').removeEventListener('click', increaseGravity);
-    analyzeButton.removeEventListener('click', analyzePerformance);
     leakButton.removeEventListener('click', simulateLeak);
     cleanButton.removeEventListener('click', cleanMemory);
     stopButton.removeEventListener('click', stopRockets);
