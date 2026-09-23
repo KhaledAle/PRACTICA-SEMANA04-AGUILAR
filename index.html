@@ -4,23 +4,240 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Aventura interactiva para descubrir los planetas del Sistema Solar.">
-  <title>Pequeños Exploradores | Sistema Solar</title>
+  <title>Práctica Semana 04 | Sistema Solar con DOM</title>
   <link rel="stylesheet" href="styles.css">
   <script defer src="app.js"></script>
 </head>
 <body>
-  <header class="site-header"><div class="header-inner"><div class="brand-lockup"><span class="brand-orbit" aria-hidden="true">✦</span><div><p class="eyebrow">Misión educativa · Semana 04</p><h1>Pequeños Exploradores</h1></div></div><div class="mission-badge"><span class="pulse-dot" aria-hidden="true"></span>Misión en curso</div></div></header>
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="brand-lockup">
+        <span class="brand-orbit" aria-hidden="true">✦</span>
+        <div>
+          <p class="eyebrow">Misión educativa · Semana 04</p>
+          <h1>Pequeños Exploradores</h1>
+        </div>
+      </div>
+      <div class="mission-badge">
+        <span class="pulse-dot" aria-hidden="true"></span>
+        Misión en curso
+      </div>
+    </div>
+  </header>
+
   <main class="dashboard-shell">
-    <section class="hero-band" aria-labelledby="page-title"><div class="hero-copy"><p class="eyebrow sun-text">Bienvenidos, astronautas</p><h2 id="page-title">¡Viajemos por el <span>Sistema Solar</span>!</h2><p>Aprende, juega y descubre secretos increíbles de nuestros vecinos espaciales.</p></div><div class="hero-planet planet-earth" aria-label="Ilustración de la Tierra"><span></span></div><div class="hero-stars" aria-hidden="true">✦　·　✧　·　✦</div></section>
-    <div class="mission-progress"><span>Mapa de misión</span><strong id="progressValue">Paso 1 de 5</strong><div><i id="progressBar"></i></div></div>
+    <section class="hero-band" aria-labelledby="page-title">
+      <div class="hero-copy">
+        <p class="eyebrow sun-text">Bienvenidos, astronautas</p>
+        <h2 id="page-title">
+          ¡Viajemos por el <span>Sistema Solar</span>!
+        </h2>
+        <p>
+          Aprende, juega y descubre secretos increíbles de nuestros vecinos espaciales.
+        </p>
+      </div>
+      <div class="hero-planet planet-earth" aria-label="Ilustración de la Tierra">
+        <span></span>
+      </div>
+      <div class="hero-stars" aria-hidden="true">✦　·　✧　·　✦</div>
+    </section>
+
+    <div class="mission-progress">
+      <div>
+        <i id="progressBar"></i>
+      </div>
+    </div>
+
     <div class="steps-grid">
-      <section class="step-card step-card-wide" id="paso-1" data-step="1"><header class="step-header"><div class="step-heading"><span class="step-number">1</span><div><h3>Mi primera estación espacial</h3><p>Conoce el Sol y saluda desde tu nave</p></div></div><span class="step-status">● ¡Listo para explorar!</span></header><div class="step-one-layout"><div class="canvas-stage solar-stage"><canvas id="setupCanvas" aria-label="Sol brillante con el nombre del astronauta"></canvas><span class="canvas-caption">Vista de la nave</span></div><div class="control-stack"><label class="field-label" for="displayText">Nombre del astronauta</label><input class="text-input" id="displayText" type="text" value="Astronauta" maxlength="22" autocomplete="off"><div class="range-heading"><label class="field-label" for="setupSpeed">Velocidad de giro</label><output id="setupSpeedValue">1.0x</output></div><input id="setupSpeed" type="range" min="0.2" max="2.5" step="0.1" value="1"><div class="button-group"><button class="button button-sun" id="setupPlay" type="button">▶ Reproducir</button><button class="button button-outline" id="setupPause" type="button">Ⅱ Pausar</button><button class="button button-ghost" id="setupReset" type="button">↺ Reiniciar</button></div><p class="helper-text" id="setupMessage" aria-live="polite">Escribe tu nombre para aparecer en la nave.</p></div></div></section>
-      <section class="step-card" id="paso-2" data-step="2"><header class="step-header"><div class="step-heading"><span class="step-number">2</span><div><h3>Diario de descubrimientos</h3><p>Guarda cada dato que encuentres</p></div></div><span class="step-status">● Misión activa</span></header><div class="discovery-layout"><div class="discovery-count"><span aria-hidden="true">⭐</span><strong id="closureCount">0</strong><small>datos descubiertos</small></div><div class="discovery-action"><button class="button button-sun" id="closureIncrement" type="button">＋ ¡Descubrí un dato!</button><p id="closureAction">Tu diario está listo.</p></div></div></section>
-      <section class="step-card" id="paso-3" data-step="3"><header class="step-header"><div class="step-heading"><span class="step-number">3</span><div><h3>Ficha de Marte</h3><p>Viste y activa tu planeta</p></div></div><span class="step-status">● ¡Juega con Marte!</span></header><div class="planet-card-layout"><div class="mars-card" id="dynamicBox"><div class="mars-planet" aria-hidden="true"></div><strong>MARTE</strong><small>El planeta rojo</small></div><div class="planet-actions"><div class="button-group"><button class="button button-outline" id="toggleHighlight" type="button">✨ Brillo</button><button class="button button-outline" id="addPulse" type="button">💫 Pulso</button><button class="button button-ghost" id="resetDom" type="button">↺ Reiniciar</button></div><label class="field-label" for="emailInput">Registro de astronauta</label><input class="text-input" id="emailInput" type="text" placeholder="Escribe tu nombre" maxlength="24" autocomplete="name" aria-describedby="emailMessage"><p class="validation-text" id="emailMessage" aria-live="polite">¿Cómo se llama el explorador?</p></div></div></section>
-      <section class="step-card step-card-wide" id="paso-4" data-step="4"><header class="step-header"><div class="step-heading"><span class="step-number">4</span><div><h3>La gran pista de órbitas</h3><p>Observa cómo viajan los planetas alrededor del Sol</p></div></div><span class="step-status">● Órbitas listas</span></header><div class="step-four-layout"><div class="canvas-stage orbit-stage"><canvas id="particleCanvas" aria-label="Planetas orbitando alrededor del Sol"></canvas><span class="canvas-caption">Simulador orbital · tiempo real</span></div><div class="particle-controls"><div class="live-metric"><span>Planetas viajando</span><strong id="particleCount">5</strong></div><div class="live-metric"><span>Tiempo entre frames</span><strong id="deltaValue">0 ms</strong></div><div class="button-stack"><button class="button button-sun" id="particleStart" type="button">🚀 Lanzar cohete</button><button class="button button-outline" id="gravityButton" type="button">🌙 Aumentar gravedad</button><button class="button button-ghost" id="particleStop" type="button">⏸ Detener órbitas</button><button class="button button-ghost" id="particleAdd" type="button">＋ Añadir planeta</button></div><p class="helper-text" id="particleMessage">Pulsa lanzar para comenzar el viaje.</p></div></div></section>
-      <section class="step-card step-card-wide" id="paso-5" data-step="5"><header class="step-header"><div class="step-heading"><span class="step-number">5</span><div><h3>Centro de mando</h3><p>Cuida la nave y mantén todo funcionando</p></div></div><span class="step-status">● Monitor espacial</span></header><div class="performance-layout"><div class="performance-metrics"><div class="perf-box"><span>🚀 FPS de la nave</span><strong id="perfFps">--</strong><small>fluidez del viaje</small></div><div class="perf-box"><span>🧠 Memoria usada</span><strong id="perfMemory">-- MB</strong><small>estimación educativa</small></div><div class="perf-box"><span>🔗 Elementos activos</span><strong id="perfListeners">0</strong><small id="listenerState">conectados</small></div><div class="perf-box warning-box"><span>⚠ Posibles fugas</span><strong id="perfLeaks">0</strong><small>señales detectadas</small></div></div><div class="chart-panel"><div class="chart-heading"><span>Velocidad de la misión</span><span id="chartStatus">Esperando datos</span></div><div class="bar-chart" id="fpsChart" aria-label="Gráfico de rendimiento"></div></div><div class="performance-actions"><button class="button button-sun" id="analyzePerformance" type="button">🔭 Revisar nave</button><button class="button button-outline" id="simulateLeak" type="button">⚠ Simular problema</button><button class="button button-ghost" id="cleanMemory" type="button">🧹 Limpiar estrellas</button><button class="button button-ghost" id="stopRockets" type="button">🛑 Detener cohetes</button><p class="helper-text" id="performanceMessage" aria-live="polite">El centro de mando observa tu misión.</p></div></div></section>
+      <section class="step-card step-card-wide" id="paso-1" data-step="1">
+        <header class="step-header">
+          <div class="step-heading">
+            <span class="step-number">1</span>
+            <div>
+              <h3>Mi primera estación espacial</h3>
+              <p>Conoce el Sol y saluda desde tu nave</p>
+            </div>
+          </div>
+          <span class="step-status">● ¡Listo para explorar!</span>
+        </header>
+        <div class="step-one-layout">
+          <div class="canvas-stage solar-stage">
+            <canvas id="setupCanvas" aria-label="Sol brillante con el nombre del astronauta"></canvas>
+            <span class="canvas-caption">Vista de la nave</span>
+          </div>
+          <div class="control-stack">
+            <label class="field-label" for="displayText">Nombre del astronauta</label>
+            <input class="text-input" id="displayText" type="text" value="Astronauta" maxlength="22" autocomplete="off">
+            <div class="range-heading">
+              <label class="field-label" for="setupSpeed">Velocidad de giro</label>
+              <output id="setupSpeedValue">1.0x</output>
+            </div>
+            <input id="setupSpeed" type="range" min="0.2" max="2.5" step="0.1" value="1">
+            <div class="button-group">
+              <button class="button button-sun" id="setupPlay" type="button">▶ Reproducir</button>
+              <button class="button button-outline" id="setupPause" type="button">Ⅱ Pausar</button>
+              <button class="button button-ghost" id="setupReset" type="button">↺ Reiniciar</button>
+            </div>
+            <p class="helper-text" id="setupMessage" aria-live="polite">
+              Escribe tu nombre para aparecer en la nave.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="step-card" id="paso-2" data-step="2">
+        <header class="step-header">
+          <div class="step-heading">
+            <span class="step-number">2</span>
+            <div>
+              <h3>Diario de descubrimientos</h3>
+              <p>Guarda cada dato que encuentres</p>
+            </div>
+          </div>
+          <span class="step-status">● Misión activa</span>
+        </header>
+        <div class="discovery-layout">
+          <div class="discovery-count">
+            <span aria-hidden="true">⭐</span>
+            <strong id="closureCount">0</strong>
+            <small>datos descubiertos</small>
+          </div>
+          <div class="discovery-action">
+            <button class="button button-sun" id="closureIncrement" type="button">
+              ＋ ¡Descubrí un dato!
+            </button>
+            <p id="closureAction">Tu diario está listo.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="step-card" id="paso-3" data-step="3">
+        <header class="step-header">
+          <div class="step-heading">
+            <span class="step-number">3</span>
+            <div>
+              <h3>Ficha de Marte</h3>
+              <p>Viste y activa tu planeta</p>
+            </div>
+          </div>
+          <span class="step-status">● ¡Juega con Marte!</span>
+        </header>
+        <div class="planet-card-layout">
+          <div class="mars-card" id="dynamicBox">
+            <div class="mars-planet" aria-hidden="true"></div>
+            <strong>MARTE</strong>
+            <small>El planeta rojo</small>
+          </div>
+          <div class="planet-actions">
+            <div class="button-group">
+              <button class="button button-outline" id="toggleHighlight" type="button">✨ Brillo</button>
+              <button class="button button-outline" id="addPulse" type="button">💫 Pulso</button>
+              <button class="button button-ghost" id="resetDom" type="button">↺ Reiniciar</button>
+            </div>
+            <label class="field-label" for="emailInput">Registro de astronauta</label>
+            <input class="text-input" id="emailInput" type="text" placeholder="Escribe tu nombre" maxlength="24" autocomplete="name" aria-describedby="emailMessage">
+            <p class="validation-text" id="emailMessage" aria-live="polite">
+              ¿Cómo se llama el explorador?
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="step-card step-card-wide" id="paso-4" data-step="4">
+        <header class="step-header">
+          <div class="step-heading">
+            <span class="step-number">4</span>
+            <div>
+              <h3>La gran pista de órbitas</h3>
+              <p>Observa cómo viajan los planetas alrededor del Sol</p>
+            </div>
+          </div>
+          <span class="step-status">● Órbitas listas</span>
+        </header>
+        <div class="step-four-layout">
+          <div class="canvas-stage orbit-stage">
+            <canvas id="particleCanvas" aria-label="Planetas orbitando alrededor del Sol"></canvas>
+            <span class="canvas-caption">Simulador orbital · tiempo real</span>
+          </div>
+          <div class="particle-controls">
+            <div class="live-metric">
+              <span>Planetas viajando</span>
+              <strong id="particleCount">5</strong>
+            </div>
+            <div class="live-metric">
+              <span>Tiempo entre frames</span>
+              <strong id="deltaValue">0 ms</strong>
+            </div>
+            <div class="button-stack">
+              <button class="button button-sun" id="particleStart" type="button">🚀 Iniciar órbitas </button>
+              <button class="button button-outline" id="gravityButton" type="button">🌙 Aumentar velocidad</button>
+              <button class="button button-ghost" id="particleStop" type="button">⏸ Detener órbitas</button>
+              <button class="button button-ghost" id="particleAdd" type="button">＋ Añadir planeta</button>
+            </div>
+            <p class="helper-text" id="particleMessage" aria-live="polite">
+              Pulsa lanzar para comenzar el viaje.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="step-card step-card-wide" id="paso-5" data-step="5">
+        <header class="step-header">
+          <div class="step-heading">
+            <span class="step-number">5</span>
+            <div>
+              <h3>Centro de mando</h3>
+              <p>Cuida la nave y mantén todo funcionando</p>
+            </div>
+          </div>
+          <span class="step-status">● Monitor espacial</span>
+        </header>
+        <div class="performance-layout">
+          <div class="performance-metrics">
+            <div class="perf-box">
+              <span>🚀 FPS de la nave</span>
+              <strong id="perfFps">--</strong>
+              <small>fluidez del viaje</small>
+            </div>
+            <div class="perf-box">
+              <span>🧠 Memoria usada</span>
+              <strong id="perfMemory">-- MB</strong>
+              <small>estimación educativa</small>
+            </div>
+            <div class="perf-box">
+              <span>🔗 Elementos activos</span>
+              <strong id="perfListeners">0</strong>
+              <small id="listenerState">conectados</small>
+            </div>
+            <div class="perf-box warning-box">
+              <span>⚠ Posibles fugas</span>
+              <strong id="perfLeaks">0</strong>
+              <small>señales detectadas</small>
+            </div>
+          </div>
+          <div class="chart-panel">
+            <div class="chart-heading">
+              <span>Velocidad de la misión</span>
+              <span id="chartStatus">Esperando datos</span>
+            </div>
+            <div class="bar-chart" id="fpsChart" aria-label="Gráfico de rendimiento"></div>
+          </div>
+          <div class="performance-actions">
+            <button class="button button-outline" id="simulateLeak" type="button">⚠ Simular problema</button>
+            <button class="button button-ghost" id="cleanMemory" type="button">🧹 Limpiar estrellas</button>
+            <button class="button button-ghost" id="stopRockets" type="button">🛑 Detener cohetes</button>
+            <p class="helper-text" id="performanceMessage" aria-live="polite">
+              El centro de mando observa tu misión.
+            </p>
+          </div>
+        </div>
+      </section>
     </div>
   </main>
-  <footer class="site-footer"><span>Pequeños Exploradores · Aprender es viajar</span><span>Guía Práctica · Semana 04</span></footer>
+
+  <footer class="site-footer">
+    <span>JANAMPA JAIME KAHLED ALEJANDRO - Aprender es viajar</span>
+    <span>Guía Práctica · Semana 04</span>
+  </footer>
 </body>
 </html>
