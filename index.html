@@ -3,91 +3,123 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Laboratorio interactivo de animacion Canvas 2D para la Semana 04.">
-  <title>Laboratorio Canvas | Semana 04</title>
+  <meta name="description" content="Laboratorio interactivo de la Guía Práctica de la Semana 04.">
+  <title>Semana 04 | Laboratorio Frontend</title>
   <link rel="stylesheet" href="styles.css">
   <script defer src="app.js"></script>
 </head>
 <body>
-  <main class="app-shell">
-    <header class="page-header">
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="brand-lockup">
+        <span class="brand-mark" aria-hidden="true">04</span>
+        <div>
+          <p class="eyebrow">Facultad de Ingeniería de sistemas</p>
+          <h1>Salón: Laboratorio 01</h1>
+        </div>
+      </div>
+      <div class="header-meta">
+        <span class="header-date">Semana 04 / 2026</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="dashboard-shell">
+    <section class="intro-band" aria-labelledby="page-title">
       <div>
-        <p class="eyebrow">PRACTICA · SEMANA 04</p>
-        <h1>Laboratorio de movimiento</h1>
-        <p class="intro">Explora un sistema de particulas controlado por tiempo delta y un loop Canvas 2D.</p>
+        <p class="eyebrow blue-text">5 Pasos de la Práctica</p>
+        <h2 id="page-title">Práctica Semana 04</h2>
+        <p class="intro-copy">JavaScript & TypeScript, Manipulación del DOM, Funciones Avanzadas (Closures, IIFE, Arrow), Canvas API y Animaciones</p>
       </div>
-      <div class="status-chip" aria-live="polite">
-        <span class="status-dot" aria-hidden="true"></span>
-        <span id="statusText">Animacion activa</span>
-      </div>
-    </header>
-
-    <section class="workspace" aria-label="Laboratorio interactivo">
-      <div class="canvas-panel">
-        <div class="canvas-toolbar">
-          <span class="panel-kicker">Canvas 2D / requestAnimationFrame</span>
-          <span class="metric" id="fpsText">FPS --</span>
-        </div>
-        <div class="canvas-frame">
-          <canvas id="animationCanvas" aria-label="Animacion de particulas en Canvas 2D">
-            Tu navegador no soporta Canvas.
-          </canvas>
-        </div>
-        <p class="canvas-hint">Haz clic dentro del campo para crear una rafaga de particulas.</p>
-      </div>
-
-      <aside class="controls-panel" aria-labelledby="controlsTitle">
-        <div class="panel-heading">
-          <p class="panel-kicker">Panel DOM</p>
-          <h2 id="controlsTitle">Controles del sistema</h2>
-        </div>
-
-        <form id="controlsForm" novalidate>
-          <label class="control-group" for="particleCount">
-            <span class="control-label">Particulas iniciales</span>
-            <span class="control-value" id="particleCountValue">42</span>
-            <input id="particleCount" name="particleCount" type="range" min="8" max="120" value="42">
-          </label>
-
-          <label class="control-group" for="speed">
-            <span class="control-label">Velocidad</span>
-            <span class="control-value" id="speedValue">1.0x</span>
-            <input id="speed" name="speed" type="range" min="0.2" max="2.5" step="0.1" value="1">
-          </label>
-
-          <label class="control-group" for="accentColor">
-            <span class="control-label">Color de acento</span>
-            <input id="accentColor" name="accentColor" type="color" value="#f4b942">
-          </label>
-
-          <div class="button-row">
-            <button class="button button-primary" id="toggleButton" type="button">Pausar</button>
-            <button class="button button-quiet" id="resetButton" type="button">Reiniciar</button>
-          </div>
-          <p class="validation-message" id="validationMessage" role="alert" aria-live="polite"></p>
-        </form>
-
-        <dl class="stats-list">
-          <div>
-            <dt>Frames renderizados</dt>
-            <dd id="frameCount">0</dd>
-          </div>
-          <div>
-            <dt>Particulas activas</dt>
-            <dd id="activeParticles">42</dd>
-          </div>
-          <div>
-            <dt>Estado del loop</dt>
-            <dd id="loopState">RUNNING</dd>
-          </div>
-        </dl>
-      </aside>
     </section>
 
-    <footer class="page-footer">
-      <span>Vanilla JavaScript · sin librerias externas</span>
-      <span>Scope · closures · DOM · Canvas · rendimiento</span>
-    </footer>
+    <div class="steps-grid">
+      <section class="step-card step-card-wide" id="paso-1" data-step="1">
+        <header class="step-header">
+          <div class="step-heading">
+            <span class="step-number">1</span>
+            <div><h3>Setup HTML + UI</h3><p>Canvas y controles base</p></div>
+          </div>
+        </header>
+        <div class="step-one-layout">
+          <div class="canvas-stage small-stage"><canvas id="setupCanvas" aria-label="Canvas de demostración inicial"></canvas></div>
+          <div class="control-stack">
+            <label class="field-label" for="displayText">Texto del canvas</label>
+            <input class="text-input" id="displayText" type="text" value="Semana 04" maxlength="28" autocomplete="off">
+            <div class="range-heading"><label class="field-label" for="setupSpeed">Velocidad</label><output id="setupSpeedValue">1.0x</output></div>
+            <input id="setupSpeed" type="range" min="0.2" max="2.5" step="0.1" value="1">
+            <div class="button-group" role="group" aria-label="Controles de la animación base">
+              <button class="button button-blue" id="setupPlay" type="button">▶ Play</button>
+              <button class="button button-outline" id="setupPause" type="button">Ⅱ Pause</button>
+              <button class="button button-ghost" id="setupReset" type="button">↺ Reset</button>
+            </div>
+            <p class="helper-text" id="setupMessage" aria-live="polite">Canvas listo para recibir instrucciones.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="step-card" id="paso-2" data-step="2">
+        <header class="step-header">
+          <div class="step-heading"><span class="step-number">2</span><div><h3>IIFE + Closures</h3><p>Estado privado en acción</p></div></div>
+        </header>
+        <div class="closure-layout">
+          <div class="metric-grid">
+            <div class="metric-box"><span>Frames</span><strong id="closureFrames">0</strong></div>
+            <div class="metric-box"><span>Clicks</span><strong id="closureClicks">0</strong></div>
+          </div>
+          <div class="action-line"><button class="button button-blue" id="closureIncrement" type="button">＋ Incrementar contador</button><span class="closure-count" id="closureCount">0</span></div>
+          <p class="last-action">Última acción <strong id="closureAction">Esperando interacción</strong></p>
+        </div>
+      </section>
+
+      <section class="step-card" id="paso-3" data-step="3">
+        <header class="step-header">
+          <div class="step-heading"><span class="step-number">3</span><div><h3>Manipulación DOM</h3><p>Clases, variables y validación</p></div></div>
+        </header>
+        <div class="dom-layout">
+          <div class="dynamic-box" id="dynamicBox"><span class="box-orbit" aria-hidden="true"></span><strong>Elemento DOM</strong><small>Estado configurable</small></div>
+          <div class="dom-controls">
+            <div class="button-group"><button class="button button-outline" id="toggleHighlight" type="button">◈ Toggle Highlight</button><button class="button button-outline" id="addPulse" type="button">◉ Añadir Pulse</button><button class="button button-ghost" id="resetDom" type="button">↺ Reset</button></div>
+            <label class="field-label" for="emailInput">Correo electrónico</label>
+            <div class="input-validation"><input class="text-input" id="emailInput" type="email" placeholder="nombre@dominio.com" autocomplete="email" aria-describedby="emailMessage"><span id="emailIcon" aria-hidden="true">○</span></div>
+            <p class="validation-text" id="emailMessage" aria-live="polite">Escribe un correo para validarlo en tiempo real.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="step-card step-card-wide" id="paso-4" data-step="4">
+        <header class="step-header">
+          <div class="step-heading"><span class="step-number">4</span><div><h3>Canvas API + requestAnimationFrame</h3><p>Partículas con tiempo delta</p></div></div>
+        </header>
+        <div class="step-four-layout">
+          <div class="canvas-stage particle-stage"><canvas id="particleCanvas" aria-label="Canvas interactivo de partículas"></canvas><span class="canvas-label">dt / frame loop</span></div>
+          <div class="particle-controls">
+            <div class="live-metric"><span>Partículas activas</span><strong id="particleCount">24</strong></div>
+            <div class="live-metric"><span>Delta time</span><strong id="deltaValue">0 ms</strong></div>
+            <div class="button-stack"><button class="button button-blue" id="particleStart" type="button">▶ Iniciar animación</button><button class="button button-outline" id="particleStop" type="button">■ Detener</button><button class="button button-ghost" id="particleAdd" type="button">＋ Añadir partícula</button></div>
+            <p class="helper-text" id="particleMessage">El loop está detenido hasta iniciar la práctica.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="step-card step-card-wide" id="paso-5" data-step="5">
+        <header class="step-header">
+          <div class="step-heading"><span class="step-number">5</span><div><h3>Monitor de rendimiento</h3><p>Observabilidad, cancelación y limpieza</p></div></div>
+        </header>
+        <div class="performance-layout">
+          <div class="performance-metrics">
+            <div class="perf-box"><span>FPS actual</span><strong id="perfFps">--</strong><small>objetivo 60</small></div>
+            <div class="perf-box"><span>Memoria estimada</span><strong id="perfMemory">-- MB</strong><small>heap disponible en el navegador</small></div>
+            <div class="perf-box"><span>Listeners activos</span><strong id="perfListeners">0</strong><small id="listenerState">registrados</small></div>
+            <div class="perf-box warning-box"><span>Posibles leaks</span><strong id="perfLeaks">0</strong><small>simulados / detectados</small></div>
+          </div>
+          <div class="chart-panel"><div class="chart-heading"><span>Historial de FPS</span><span id="chartStatus">En espera</span></div><div class="bar-chart" id="fpsChart" aria-label="Gráfico de historial de FPS"></div></div>
+          <div class="performance-actions"><button class="button button-blue" id="analyzePerformance" type="button">⌁ Analizar rendimiento</button><button class="button button-outline" id="simulateLeak" type="button">⚠ Simular memory leak</button><button class="button button-ghost" id="cleanMemory" type="button">♲ Limpiar memoria</button><p class="helper-text" id="performanceMessage" aria-live="polite">El monitor se actualiza con el loop de partículas.</p></div>
+        </div>
+      </section>
+    </div>
   </main>
+
+  <footer class="site-footer"><span>JANAMPA JAIME KHALED ALEJANDRO</span><span>Semana 04 Laboratorio Frontend</span></footer>
 </body>
 </html>
