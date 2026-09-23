@@ -2,7 +2,10 @@
   'use strict';
 
   // ==========================================
-  // #region PASO 1: Setup HTML + UI con Canvas y Controles
+  // #region PASO 1: Explorador de Planetas
+  // Efecto implementado: Sol brillante que gira y muestra el nombre del astronauta.
+  // Concepto técnico aplicado: IIFE para encapsular la práctica, DOM manipulation para
+  // leer controles y requestAnimationFrame para actualizar el Canvas sin bloquear la UI.
   // ==========================================
   const setupCanvas = document.querySelector('#setupCanvas');
   const setupContext = setupCanvas.getContext('2d');
@@ -10,87 +13,98 @@
   const setupSpeed = document.querySelector('#setupSpeed');
   const setupSpeedValue = document.querySelector('#setupSpeedValue');
   const setupMessage = document.querySelector('#setupMessage');
-  const setupState = {
-    animationId: null,
-    isRunning: true,
-    angle: 0,
-    speed: Number(setupSpeed.value)
-  };
+  const setupPlay = document.querySelector('#setupPlay');
+  const setupPause = document.querySelector('#setupPause');
+  const setupReset = document.querySelector('#setupReset');
+  const setupState = { animationId: null, isRunning: true, angle: 0, speed: 1, lastTimestamp: 0 };
 
   const resizeSetupCanvas = () => {
     const bounds = setupCanvas.getBoundingClientRect();
-    const pixelRatio = window.devicePixelRatio || 1;
-    setupCanvas.width = Math.floor(bounds.width * pixelRatio);
-    setupCanvas.height = Math.floor(bounds.height * pixelRatio);
-    setupContext.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+    const ratio = window.devicePixelRatio || 1;
+    setupCanvas.width = Math.floor(bounds.width * ratio);
+    setupCanvas.height = Math.floor(bounds.height * ratio);
+    setupContext.setTransform(ratio, 0, 0, ratio, 0, 0);
   };
 
   const drawSetupCanvas = () => {
     const width = setupCanvas.clientWidth;
     const height = setupCanvas.clientHeight;
-    setupContext.clearRect(0, 0, width, height);
-    setupContext.fillStyle = '#061525';
-    setupContext.fillRect(0, 0, width, height);
-    setupContext.strokeStyle = 'rgba(82, 168, 255, .16)';
-    setupContext.lineWidth = 1;
-    for (let x = 0; x < width; x += 28) {
-      setupContext.beginPath();
-      setupContext.moveTo(x, 0);
-      setupContext.lineTo(x, height);
-      setupContext.stroke();
-    }
-    for (let y = 0; y < height; y += 28) {
-      setupContext.beginPath();
-      setupContext.moveTo(0, y);
-      setupContext.lineTo(width, y);
-      setupContext.stroke();
-    }
     const centerX = width / 2;
     const centerY = height / 2;
-    const orbitX = centerX + Math.cos(setupState.angle) * 55;
-    const orbitY = centerY + Math.sin(setupState.angle) * 26;
-    setupContext.beginPath();
-    setupContext.arc(orbitX, orbitY, 8, 0, Math.PI * 2);
-    setupContext.fillStyle = '#52a8ff';
-    setupContext.fill();
-    setupContext.fillStyle = '#e9f1fa';
-    setupContext.font = '700 22px system-ui, sans-serif';
-    setupContext.textAlign = 'center';
-    setupContext.fillText(displayText.value || 'Canvas', centerX, centerY + 8);
-  };
-
-  const animateSetupCanvas = (timestamp) => {
-    if (!setupState.isRunning) return;
-    setupState.angle = timestamp * 0.001 * setupState.speed;
-    drawSetupCanvas();
-    setupState.animationId = requestAnimationFrame(animateSetupCanvas);
-  };
-
-  const startSetupAnimation = () => {
-    if (setupState.animationId === null) setupState.animationId = requestAnimationFrame(animateSetupCanvas);
-    setupState.isRunning = true;
-    setupMessage.textContent = 'Loop base ejecutándose con requestAnimationFrame.';
-  };
-
-  const stopSetupAnimation = () => {
-    setupState.isRunning = false;
-    if (setupState.animationId !== null) {
-      cancelAnimationFrame(setupState.animationId);
-      setupState.animationId = null;
+    const text = displayText.value.trim() || 'Astronauta';
+    const orbitRadiusX = Math.min(105, width * .23);
+    const orbitRadiusY = Math.min(58, height * .25);
+    const sunX = centerX;
+    const sunY = centerY;
+    const textX = centerX + Math.cos(setupState.angle) * orbitRadiusX;
+    const textY = centerY + Math.sin(setupState.angle) * orbitRadiusY;
+    setupContext.clearRect(0, 0, width, height);
+    setupContext.fillStyle = '#0d123b';
+    setupContext.fillRect(0, 0, width, height);
+    for (let index = 0; index < 35; index += 1) {
+      setupContext.fillStyle = index % 3 === 0 ? '#ffe58b' : '#ffffff';
+      setupContext.globalAlpha = index % 3 === 0 ? .7 : .3;
+      setupContext.beginPath();
+      setupContext.arc((index * 83) % width, (index * 47) % height, index % 3 + 1, 0, Math.PI * 2);
+      setupContext.fill();
     }
-    drawSetupCanvas();
-    setupMessage.textContent = 'Animación pausada. El canvas conserva su último frame.';
+    setupContext.globalAlpha = 1;
+    const glow = setupContext.createRadialGradient(sunX, sunY, 12, sunX, sunY, 80);
+    glow.addColorStop(0, '#fff4ad');
+    glow.addColorStop(.45, '#ffc857');
+    glow.addColorStop(1, 'rgba(255,120,168,0)');
+    setupContext.fillStyle = glow;
+    setupContext.beginPath();
+    setupContext.arc(sunX, sunY, 82, 0, Math.PI * 2);
+    setupContext.fill();
+    setupContext.fillStyle = '#ffc857';
+    setupContext.beginPath();
+    setupContext.arc(sunX, sunY, 48, 0, Math.PI * 2);
+    setupContext.fill();
+    setupContext.fillStyle = '#fffdf6';
+    setupContext.font = '700 20px Trebuchet MS, sans-serif';
+    setupContext.textAlign = 'center';
+    setupContext.fillText(text, textX, textY + 7);
+    setupContext.fillStyle = '#452c00';
+    setupContext.font = '700 12px Trebuchet MS, sans-serif';
+    setupContext.fillText('SOL', sunX, sunY + 5);
   };
 
-  const resetSetupAnimation = () => {
-    setupState.angle = 0;
+  const animateSetup = (timestamp) => {
+    if (!setupState.isRunning) return;
+    if (!setupState.lastTimestamp) setupState.lastTimestamp = timestamp;
+    const deltaTime = Math.min((timestamp - setupState.lastTimestamp) / 1000, .05);
+    setupState.lastTimestamp = timestamp;
+    setupState.angle += deltaTime * setupState.speed * 1.4;
+    drawSetupCanvas();
+    setupState.animationId = requestAnimationFrame(animateSetup);
+  };
+
+  const playSetup = () => {
+    setupState.isRunning = true;
+    setupState.lastTimestamp = 0;
+    if (setupState.animationId === null) setupState.animationId = requestAnimationFrame(animateSetup);
+    setupMessage.textContent = 'El Sol está girando. ¡Misión en marcha!';
+  };
+
+  const pauseSetup = () => {
+    setupState.isRunning = false;
+    if (setupState.animationId !== null) cancelAnimationFrame(setupState.animationId);
+    setupState.animationId = null;
+    setupState.lastTimestamp = 0;
+    setupMessage.textContent = 'Vista pausada. Puedes continuar cuando quieras.';
+  };
+
+  const resetSetup = () => {
+    displayText.value = 'Astronauta';
     setupSpeed.value = '1';
     setupState.speed = 1;
+    setupState.angle = 0;
+    setupState.lastTimestamp = 0;
     setupSpeedValue.textContent = '1.0x';
-    displayText.value = 'Semana 04';
+    playSetup();
     drawSetupCanvas();
-    startSetupAnimation();
-    setupMessage.textContent = 'Canvas reiniciado con su configuración inicial.';
+    setupMessage.textContent = 'La nave volvió a su punto de partida.';
   };
 
   const handleSetupText = () => drawSetupCanvas();
@@ -98,228 +112,142 @@
     setupState.speed = Number(setupSpeed.value);
     setupSpeedValue.textContent = `${setupState.speed.toFixed(1)}x`;
   };
-  const handleSetupResize = () => {
-    resizeSetupCanvas();
-    drawSetupCanvas();
-  };
-
-  document.querySelector('#setupPlay').addEventListener('click', startSetupAnimation);
-  document.querySelector('#setupPause').addEventListener('click', stopSetupAnimation);
-  document.querySelector('#setupReset').addEventListener('click', resetSetupAnimation);
+  const handleSetupResize = () => { resizeSetupCanvas(); drawSetupCanvas(); };
+  setupPlay.addEventListener('click', playSetup);
+  setupPause.addEventListener('click', pauseSetup);
+  setupReset.addEventListener('click', resetSetup);
   displayText.addEventListener('input', handleSetupText);
   setupSpeed.addEventListener('input', handleSetupSpeed);
   window.addEventListener('resize', handleSetupResize);
   resizeSetupCanvas();
   drawSetupCanvas();
-  startSetupAnimation();
+  playSetup();
   // #endregion PASO 1
 
   // ==========================================
-  // #region PASO 2: IIFE + Closures + Arrow Functions
+  // #region PASO 2: Scope y Closures
+  // Efecto implementado: contador de estrellas y datos descubiertos.
+  // Concepto técnico aplicado: Closure privado; count vive en el scope de la fábrica y
+  // sus métodos lo retienen entre clicks sin exponer una variable global.
   // ==========================================
-  const createPrivateCounter = () => {
+  const createDiscoveryCounter = () => {
     let count = 0;
-    let clicks = 0;
-
-    // El closure conserva count y clicks dentro de esta función, sin exponerlos como variables globales.
     return {
-      increment: () => {
-        count += 1;
-        clicks += 1;
-        return { count, clicks };
-      },
-      read: () => ({ count, clicks })
+      discover: () => { count += 1; return count; },
+      read: () => count
     };
   };
-
-  const privateCounter = createPrivateCounter();
-  const closureFrames = document.querySelector('#closureFrames');
-  const closureClicks = document.querySelector('#closureClicks');
+  const discoveryCounter = createDiscoveryCounter();
   const closureCount = document.querySelector('#closureCount');
   const closureAction = document.querySelector('#closureAction');
-  let closureFrameTotal = 0;
-  let closureAnimationId = null;
-
-  const renderClosureMetrics = () => {
-    const metrics = privateCounter.read();
-    closureFrames.textContent = closureFrameTotal;
-    closureClicks.textContent = metrics.clicks;
-    closureCount.textContent = metrics.count;
+  const closureIncrement = document.querySelector('#closureIncrement');
+  const handleDiscovery = () => {
+    const discoveries = discoveryCounter.discover();
+    closureCount.textContent = discoveries;
+    closureAction.textContent = discoveries === 1 ? '¡Encontraste tu primer dato!' : '¡Tu diario tiene un nuevo descubrimiento!';
   };
-
-  const handleClosureIncrement = () => {
-    privateCounter.increment();
-    closureAction.textContent = 'Contador incrementado desde el closure';
-    renderClosureMetrics();
-  };
-
-  const updateClosureFrames = () => {
-    closureFrameTotal += 1;
-    if (closureFrameTotal % 6 === 0) renderClosureMetrics();
-    closureAnimationId = requestAnimationFrame(updateClosureFrames);
-  };
-
-  document.querySelector('#closureIncrement').addEventListener('click', handleClosureIncrement);
-  requestAnimationFrame(updateClosureFrames);
-  renderClosureMetrics();
+  closureIncrement.addEventListener('click', handleDiscovery);
   // #endregion PASO 2
 
   // ==========================================
-  // #region PASO 3: Manipulación DOM + Validación
+  // #region PASO 3: Manipulación DOM y Validación
+  // Efecto implementado: ficha de Marte con brillo, pulso y registro del explorador.
+  // Concepto técnico aplicado: DOM manipulation con classList.toggle/add/remove y
+  // validación dinámica; los estados visuales viven en CSS, sin estilos inline.
   // ==========================================
-  const dynamicBox = document.querySelector('#dynamicBox');
+  const marsCard = document.querySelector('#dynamicBox');
   const toggleHighlight = document.querySelector('#toggleHighlight');
   const addPulse = document.querySelector('#addPulse');
   const resetDom = document.querySelector('#resetDom');
-  const emailInput = document.querySelector('#emailInput');
-  const emailMessage = document.querySelector('#emailMessage');
-  const emailIcon = document.querySelector('#emailIcon');
-  const emailValidation = emailIcon.parentElement;
+  const explorerInput = document.querySelector('#emailInput');
+  const explorerMessage = document.querySelector('#emailMessage');
 
-  const validateEmail = () => {
-    const value = emailInput.value.trim();
-    const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-    const isEmpty = value.length === 0;
-    emailValidation.classList.toggle('is-valid', isValid);
-    emailValidation.classList.toggle('is-invalid', !isValid && !isEmpty);
-    emailMessage.classList.toggle('is-valid', isValid);
-    emailMessage.classList.toggle('is-invalid', !isValid && !isEmpty);
-    emailIcon.textContent = isValid ? '✓' : (!isEmpty ? '×' : '○');
-    emailMessage.textContent = isValid ? 'Correo válido: el formato cumple la validación.' : (!isEmpty ? 'Revisa el formato: ejemplo@dominio.com.' : 'Escribe un correo para validarlo en tiempo real.');
+  const validateExplorer = () => {
+    const value = explorerInput.value.trim();
+    const isValid = value.length >= 2;
+    explorerMessage.classList.toggle('is-valid', isValid);
+    explorerMessage.classList.toggle('is-invalid', !isValid && value.length > 0);
+    explorerMessage.textContent = isValid ? `¡Hola, ${value}! Marte te espera.` : value ? 'Escribe al menos dos letras, astronauta.' : '¿Cómo se llama el explorador?';
   };
-
-  const handleToggleHighlight = () => dynamicBox.classList.toggle('is-highlighted');
+  const handleHighlight = () => marsCard.classList.toggle('is-highlighted');
   const handlePulse = () => {
-    dynamicBox.classList.remove('is-pulsing');
-    requestAnimationFrame(() => dynamicBox.classList.add('is-pulsing'));
+    marsCard.classList.remove('is-pulsing');
+    requestAnimationFrame(() => marsCard.classList.add('is-pulsing'));
   };
-  const handleResetDom = () => {
-    dynamicBox.classList.remove('is-highlighted', 'is-pulsing');
-    emailInput.value = '';
-    validateEmail();
-  };
-
-  toggleHighlight.addEventListener('click', handleToggleHighlight);
+  const handleDomReset = () => { marsCard.classList.remove('is-highlighted', 'is-pulsing'); explorerInput.value = ''; validateExplorer(); };
+  toggleHighlight.addEventListener('click', handleHighlight);
   addPulse.addEventListener('click', handlePulse);
-  resetDom.addEventListener('click', handleResetDom);
-  emailInput.addEventListener('input', validateEmail);
+  resetDom.addEventListener('click', handleDomReset);
+  explorerInput.addEventListener('input', validateExplorer);
   // #endregion PASO 3
 
   // ==========================================
-  // #region PASO 4: Canvas API + requestAnimationFrame
+  // #region PASO 4: Canvas API y requestAnimationFrame
+  // Efecto implementado: planetas de colores orbitando alrededor del Sol.
+  // Concepto técnico aplicado: Canvas 2D, requestAnimationFrame y tiempo delta (dt)
+  // para que la velocidad sea uniforme aunque cambien los frames por segundo.
   // ==========================================
-  const particleCanvas = document.querySelector('#particleCanvas');
-  const particleContext = particleCanvas.getContext('2d');
-  const particleCountText = document.querySelector('#particleCount');
+  const orbitCanvas = document.querySelector('#particleCanvas');
+  const orbitContext = orbitCanvas.getContext('2d');
+  const particleCount = document.querySelector('#particleCount');
   const deltaValue = document.querySelector('#deltaValue');
   const particleMessage = document.querySelector('#particleMessage');
-  const particleState = {
-    animationId: null,
-    lastTimestamp: 0,
-    isRunning: false,
-    particles: []
+  const particleState = { animationId: null, isRunning: false, lastTimestamp: 0, gravity: 1, particles: [] };
+  const planetColors = ['#68c5ff', '#ff78a8', '#75e0c1', '#ffe58b', '#ed746e', '#c8a7ff'];
+
+  const resizeOrbitCanvas = () => {
+    const bounds = orbitCanvas.getBoundingClientRect();
+    const ratio = window.devicePixelRatio || 1;
+    orbitCanvas.width = Math.floor(bounds.width * ratio);
+    orbitCanvas.height = Math.floor(bounds.height * ratio);
+    orbitContext.setTransform(ratio, 0, 0, ratio, 0, 0);
   };
-
-  const resizeParticleCanvas = () => {
-    const bounds = particleCanvas.getBoundingClientRect();
-    const pixelRatio = window.devicePixelRatio || 1;
-    particleCanvas.width = Math.floor(bounds.width * pixelRatio);
-    particleCanvas.height = Math.floor(bounds.height * pixelRatio);
-    particleContext.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+  const makePlanet = (index = particleState.particles.length) => ({ angle: Math.random() * Math.PI * 2, orbit: 35 + index * 22, size: 4 + (index % 3) * 2, speed: .45 + index * .08, color: planetColors[index % planetColors.length] });
+  const seedPlanets = () => { particleState.particles = Array.from({ length: 5 }, (_, index) => makePlanet(index)); particleCount.textContent = particleState.particles.length; };
+  const drawOrbitScene = () => {
+    const width = orbitCanvas.clientWidth;
+    const height = orbitCanvas.clientHeight;
+    const centerX = width / 2;
+    const centerY = height / 2;
+    const maxOrbit = Math.min(width, height) * .43;
+    orbitContext.clearRect(0, 0, width, height);
+    orbitContext.fillStyle = '#0d123b';
+    orbitContext.fillRect(0, 0, width, height);
+    for (let star = 0; star < 38; star += 1) { orbitContext.fillStyle = star % 4 === 0 ? '#ffe58b' : '#ffffff'; orbitContext.globalAlpha = .35; orbitContext.fillRect((star * 61) % width, (star * 37) % height, 2, 2); }
+    orbitContext.globalAlpha = 1;
+    particleState.particles.forEach((planet) => { orbitContext.beginPath(); orbitContext.strokeStyle = 'rgba(255,255,255,.16)'; orbitContext.arc(centerX, centerY, Math.min(planet.orbit, maxOrbit), 0, Math.PI * 2); orbitContext.stroke(); });
+    const sun = orbitContext.createRadialGradient(centerX, centerY, 5, centerX, centerY, 30); sun.addColorStop(0, '#fff4ad'); sun.addColorStop(1, '#ff9d38'); orbitContext.fillStyle = sun; orbitContext.beginPath(); orbitContext.arc(centerX, centerY, 22, 0, Math.PI * 2); orbitContext.fill();
+    particleState.particles.forEach((planet) => { const radius = Math.min(planet.orbit, maxOrbit); const x = centerX + Math.cos(planet.angle) * radius; const y = centerY + Math.sin(planet.angle) * radius; orbitContext.fillStyle = planet.color; orbitContext.beginPath(); orbitContext.arc(x, y, planet.size, 0, Math.PI * 2); orbitContext.fill(); });
   };
-
-  const makeParticle = (x = Math.random() * particleCanvas.clientWidth, y = Math.random() * particleCanvas.clientHeight) => ({
-    x,
-    y,
-    radius: 2 + Math.random() * 3,
-    velocityX: (Math.random() - .5) * 80,
-    velocityY: (Math.random() - .5) * 80
-  });
-
-  const seedParticles = (amount = 24) => {
-    particleState.particles = Array.from({ length: amount }, () => makeParticle());
-    particleCountText.textContent = particleState.particles.length;
-  };
-
-  const updateParticles = (dt) => {
-    particleState.particles.forEach((particle) => {
-      particle.x += particle.velocityX * dt;
-      particle.y += particle.velocityY * dt;
-      if (particle.x < 0 || particle.x > particleCanvas.clientWidth) particle.velocityX *= -1;
-      if (particle.y < 0 || particle.y > particleCanvas.clientHeight) particle.velocityY *= -1;
-    });
-  };
-
-  const drawParticles = () => {
-    const width = particleCanvas.clientWidth;
-    const height = particleCanvas.clientHeight;
-    particleContext.clearRect(0, 0, width, height);
-    particleContext.fillStyle = '#061525';
-    particleContext.fillRect(0, 0, width, height);
-    particleContext.strokeStyle = 'rgba(61, 213, 208, .14)';
-    particleContext.beginPath();
-    particleContext.moveTo(0, height * .78);
-    particleContext.lineTo(width, height * .22);
-    particleContext.stroke();
-    particleState.particles.forEach((particle) => {
-      particleContext.beginPath();
-      particleContext.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
-      particleContext.fillStyle = '#3dd5d0';
-      particleContext.fill();
-    });
-  };
-
-  const animateParticles = (timestamp) => {
+  const animateOrbits = (timestamp) => {
     if (!particleState.isRunning) return;
     if (!particleState.lastTimestamp) particleState.lastTimestamp = timestamp;
     const dt = Math.min((timestamp - particleState.lastTimestamp) / 1000, .05);
     particleState.lastTimestamp = timestamp;
-    updateParticles(dt);
-    drawParticles();
+    particleState.particles.forEach((planet) => { planet.angle += dt * planet.speed * particleState.gravity; });
+    drawOrbitScene();
     deltaValue.textContent = `${Math.round(dt * 1000)} ms`;
-    particleState.animationId = requestAnimationFrame(animateParticles);
+    particleState.animationId = requestAnimationFrame(animateOrbits);
     updatePerformanceReading(dt);
   };
-
-  const startParticleAnimation = () => {
-    if (particleState.animationId !== null) cancelAnimationFrame(particleState.animationId);
-    particleState.lastTimestamp = 0;
-    particleState.isRunning = true;
-    particleMessage.textContent = 'Loop continuo activo: cada frame calcula su dt.';
-    particleState.animationId = requestAnimationFrame(animateParticles);
-  };
-
-  const stopParticleAnimation = () => {
-    particleState.isRunning = false;
-    if (particleState.animationId !== null) {
-      cancelAnimationFrame(particleState.animationId);
-      particleState.animationId = null;
-    }
-    particleMessage.textContent = 'Loop detenido con cancelAnimationFrame.';
-  };
-
-  const addParticle = () => {
-    particleState.particles.push(makeParticle(particleCanvas.clientWidth / 2, particleCanvas.clientHeight / 2));
-    particleCountText.textContent = particleState.particles.length;
-    drawParticles();
-  };
-
-  const handleParticleResize = () => {
-    resizeParticleCanvas();
-    drawParticles();
-  };
-
-  document.querySelector('#particleStart').addEventListener('click', startParticleAnimation);
-  document.querySelector('#particleStop').addEventListener('click', stopParticleAnimation);
-  document.querySelector('#particleAdd').addEventListener('click', addParticle);
-  window.addEventListener('resize', handleParticleResize);
-  resizeParticleCanvas();
-  seedParticles();
-  drawParticles();
+  const startOrbits = () => { if (particleState.animationId !== null) cancelAnimationFrame(particleState.animationId); particleState.isRunning = true; particleState.lastTimestamp = 0; particleMessage.textContent = '¡Los planetas están viajando!'; particleState.animationId = requestAnimationFrame(animateOrbits); };
+  const stopOrbits = () => { particleState.isRunning = false; if (particleState.animationId !== null) cancelAnimationFrame(particleState.animationId); particleState.animationId = null; particleMessage.textContent = 'Órbitas detenidas para observar mejor.'; };
+  const addPlanet = () => { particleState.particles.push(makePlanet()); particleCount.textContent = particleState.particles.length; drawOrbitScene(); particleMessage.textContent = '¡Nuevo planeta incorporado a la misión!'; };
+  const increaseGravity = () => { particleState.gravity = particleState.gravity >= 2 ? 1 : particleState.gravity + .5; particleMessage.textContent = `Gravedad espacial: ${particleState.gravity.toFixed(1)}x`; };
+  const handleOrbitResize = () => { resizeOrbitCanvas(); drawOrbitScene(); };
+  document.querySelector('#particleStart').addEventListener('click', startOrbits);
+  document.querySelector('#particleStop').addEventListener('click', stopOrbits);
+  document.querySelector('#particleAdd').addEventListener('click', addPlanet);
+  document.querySelector('#gravityButton').addEventListener('click', increaseGravity);
+  window.addEventListener('resize', handleOrbitResize);
+  resizeOrbitCanvas(); seedPlanets(); drawOrbitScene();
   // #endregion PASO 4
 
   // ==========================================
-  // #region PASO 5: Monitor de Rendimiento y Optimización
+  // #region PASO 5: Centro de Mando y Memory Cleanup
+  // Efecto implementado: monitor espacial de FPS, memoria, elementos activos y fugas.
+  // Concepto técnico aplicado: cancelAnimationFrame y removeEventListener para detener
+  // cohetes y remover listeners huérfanos, evitando callbacks y memory leaks.
   // ==========================================
   const perfFps = document.querySelector('#perfFps');
   const perfMemory = document.querySelector('#perfMemory');
@@ -329,118 +257,61 @@
   const performanceMessage = document.querySelector('#performanceMessage');
   const chartStatus = document.querySelector('#chartStatus');
   const fpsChart = document.querySelector('#fpsChart');
-  const performanceState = {
-    fpsHistory: [],
-    lastFrame: 0,
-    sampleFrames: 0,
-    sampleStart: 0,
-    fps: 0,
-    simulatedLeaks: 0,
-    activeListeners: 13
-  };
+  const performanceState = { history: [48, 52, 56, 60, 57, 59], sampleFrames: 0, sampleStart: 0, fps: 0, leaks: 0, listeners: 15 };
 
-  const buildChart = () => {
-    fpsChart.replaceChildren();
-    performanceState.fpsHistory.forEach((fps) => {
-      const bar = document.createElement('span');
-      bar.className = 'chart-bar';
-      bar.setAttribute('aria-label', `${fps} FPS`);
-      const level = Math.max(10, Math.min(100, Math.round((fps / 60) * 10) * 10));
-      bar.dataset.level = level;
-      fpsChart.appendChild(bar);
-    });
-  };
-
-  const getMemoryEstimate = () => {
-    const particleMemory = particleState.particles.length * 0.12;
-    const leakMemory = performanceState.simulatedLeaks * 1.8;
-    return (4.8 + particleMemory + leakMemory).toFixed(1);
-  };
-
+  const buildChart = () => { fpsChart.replaceChildren(); performanceState.history.forEach((fps) => { const bar = document.createElement('span'); bar.className = 'chart-bar'; bar.dataset.level = Math.max(10, Math.min(100, Math.round((fps / 60) * 10) * 10)); bar.setAttribute('aria-label', `${fps} FPS`); fpsChart.appendChild(bar); }); };
+  const estimateMemory = () => (4.8 + particleState.particles.length * .12 + performanceState.leaks * 1.8).toFixed(1);
   const updatePerformanceReading = (dt) => {
-    const timestamp = performance.now();
-    performanceState.sampleFrames += 1;
-    if (!performanceState.sampleStart) performanceState.sampleStart = timestamp;
-    if (timestamp - performanceState.sampleStart >= 500) {
-      performanceState.fps = Math.round((performanceState.sampleFrames * 1000) / (timestamp - performanceState.sampleStart));
-      performanceState.sampleFrames = 0;
-      performanceState.sampleStart = timestamp;
-      performanceState.fpsHistory.push(performanceState.fps);
-      performanceState.fpsHistory = performanceState.fpsHistory.slice(-18);
-      buildChart();
-    }
-    performanceState.lastFrame = dt;
-    perfFps.textContent = performanceState.fps ? performanceState.fps : '--';
-    perfMemory.textContent = `${getMemoryEstimate()} MB`;
-    perfListeners.textContent = performanceState.activeListeners + performanceState.simulatedLeaks;
-    perfLeaks.textContent = performanceState.simulatedLeaks;
+    const now = performance.now(); performanceState.sampleFrames += 1; if (!performanceState.sampleStart) performanceState.sampleStart = now;
+    if (now - performanceState.sampleStart >= 500) { performanceState.fps = Math.round(performanceState.sampleFrames * 1000 / (now - performanceState.sampleStart)); performanceState.history.push(performanceState.fps); performanceState.history = performanceState.history.slice(-18); performanceState.sampleFrames = 0; performanceState.sampleStart = now; buildChart(); }
+    perfFps.textContent = performanceState.fps || '--'; perfMemory.textContent = `${estimateMemory()} MB`; perfListeners.textContent = performanceState.listeners + performanceState.leaks; perfLeaks.textContent = performanceState.leaks; deltaValue.textContent = `${Math.round(dt * 1000)} ms`;
   };
-
-  const analyzePerformance = () => {
-    chartStatus.textContent = 'Analizado';
-    performanceMessage.textContent = performanceState.fps >= 50 ? 'Rendimiento estable: el loop mantiene una cadencia saludable.' : 'Muestra insuficiente: inicia la animación para obtener más datos.';
-    chartStatus.classList.add('is-analyzed');
-  };
-
-  const simulateMemoryLeak = () => {
-    performanceState.simulatedLeaks += 3;
-    perfLeaks.textContent = performanceState.simulatedLeaks;
-    perfListeners.textContent = performanceState.activeListeners + performanceState.simulatedLeaks;
-    perfMemory.textContent = `${getMemoryEstimate()} MB`;
-    listenerState.textContent = 'requieren limpieza';
-    performanceMessage.textContent = 'Simulación creada: listeners huérfanos detectados por el monitor.';
-  };
-
-  const cleanMemory = () => {
-    performanceState.simulatedLeaks = 0;
-    perfLeaks.textContent = '0';
-    perfListeners.textContent = performanceState.activeListeners;
-    perfMemory.textContent = `${getMemoryEstimate()} MB`;
-    listenerState.textContent = 'registrados';
-    performanceMessage.textContent = 'Memoria limpia: referencias y listeners simulados liberados.';
-  };
-
-  document.querySelector('#analyzePerformance').addEventListener('click', analyzePerformance);
-  document.querySelector('#simulateLeak').addEventListener('click', simulateMemoryLeak);
-  document.querySelector('#cleanMemory').addEventListener('click', cleanMemory);
-  performanceState.fpsHistory = [48, 52, 55, 58, 57, 60, 59, 60];
-  buildChart();
-  updatePerformanceReading(0);
-  startParticleAnimation();
+  const analyzePerformance = () => { chartStatus.textContent = '¡Todo bien!'; performanceMessage.textContent = performanceState.fps >= 50 ? 'La nave viaja suave y estable.' : 'Necesitamos más datos: deja correr las órbitas.'; };
+  const simulateLeak = () => { performanceState.leaks += 3; listenerState.textContent = 'hay señales por limpiar'; performanceMessage.textContent = 'Se simuló un problema para practicar la limpieza.'; updatePerformanceReading(0); };
+  const cleanMemory = () => { performanceState.leaks = 0; listenerState.textContent = 'conectados'; performanceMessage.textContent = '¡Estrellas limpias! La nave quedó ordenada.'; updatePerformanceReading(0); };
+  const stopRockets = () => { stopOrbits(); pauseSetup(); performanceMessage.textContent = 'Todos los cohetes se detuvieron con cancelAnimationFrame.'; };
+  const analyzeButton = document.querySelector('#analyzePerformance'); const leakButton = document.querySelector('#simulateLeak'); const cleanButton = document.querySelector('#cleanMemory'); const stopButton = document.querySelector('#stopRockets');
+  analyzeButton.addEventListener('click', analyzePerformance); leakButton.addEventListener('click', simulateLeak); cleanButton.addEventListener('click', cleanMemory); stopButton.addEventListener('click', stopRockets); buildChart(); updatePerformanceReading(0); startOrbits();
   // #endregion PASO 5
 
   // ==========================================
   // #region NAVEGACIÓN Y DESMONTAJE
+  // Efecto implementado: progreso visual de la misión y apagado seguro de la experiencia.
+  // Concepto técnico aplicado: Memory cleanup con cancelAnimationFrame y removeEventListener
+  // en pagehide para que ninguna animación o referencia siga viva al salir de la página.
   // ==========================================
   const stepCards = [...document.querySelectorAll('.step-card')];
   const progressValue = document.querySelector('#progressValue');
   const progressBar = document.querySelector('#progressBar');
-
-  const updateProgress = () => {
-    const viewportMiddle = window.innerHeight * .55;
-    const activeStep = stepCards.reduce((closest, card, index) => {
-      const distance = Math.abs(card.getBoundingClientRect().top - viewportMiddle);
-      return distance < closest.distance ? { index, distance } : closest;
-    }, { index: 0, distance: Infinity });
-    const stepNumber = activeStep.index + 1;
-    progressValue.textContent = `${stepNumber} / 5`;
-    progressBar.classList.remove('progress-20', 'progress-40', 'progress-60', 'progress-80', 'progress-100');
-    progressBar.classList.add(`progress-${stepNumber * 20}`);
-    stepCards.forEach((card, index) => card.classList.toggle('is-complete', index < activeStep.index));
-  };
-
+  const updateProgress = () => { const middle = window.innerHeight * .55; const active = stepCards.reduce((best, card, index) => { const distance = Math.abs(card.getBoundingClientRect().top - middle); return distance < best.distance ? { index, distance } : best; }, { index: 0, distance: Infinity }); const number = active.index + 1; progressValue.textContent = `Paso ${number} de 5`; progressBar.className = `progress-${number * 20}`; stepCards.forEach((card, index) => card.classList.toggle('is-complete', index < active.index)); };
   const teardown = () => {
-    stopSetupAnimation();
-    stopParticleAnimation();
-    if (closureAnimationId !== null) cancelAnimationFrame(closureAnimationId);
+    stopOrbits();
+    pauseSetup();
+    setupPlay.removeEventListener('click', playSetup);
+    setupPause.removeEventListener('click', pauseSetup);
+    setupReset.removeEventListener('click', resetSetup);
+    displayText.removeEventListener('input', handleSetupText);
+    setupSpeed.removeEventListener('input', handleSetupSpeed);
+    closureIncrement.removeEventListener('click', handleDiscovery);
+    toggleHighlight.removeEventListener('click', handleHighlight);
+    addPulse.removeEventListener('click', handlePulse);
+    resetDom.removeEventListener('click', handleDomReset);
+    explorerInput.removeEventListener('input', validateExplorer);
+    document.querySelector('#particleStart').removeEventListener('click', startOrbits);
+    document.querySelector('#particleStop').removeEventListener('click', stopOrbits);
+    document.querySelector('#particleAdd').removeEventListener('click', addPlanet);
+    document.querySelector('#gravityButton').removeEventListener('click', increaseGravity);
+    analyzeButton.removeEventListener('click', analyzePerformance);
+    leakButton.removeEventListener('click', simulateLeak);
+    cleanButton.removeEventListener('click', cleanMemory);
+    stopButton.removeEventListener('click', stopRockets);
     window.removeEventListener('resize', handleSetupResize);
-    window.removeEventListener('resize', handleParticleResize);
+    window.removeEventListener('resize', handleOrbitResize);
     window.removeEventListener('scroll', updateProgress);
-    listenerState.textContent = 'desmontados';
+    listenerState.textContent = 'desconectados';
   };
-
-  progressBar.classList.add('progress-20');
   window.addEventListener('scroll', updateProgress, { passive: true });
   window.addEventListener('pagehide', teardown, { once: true });
+  updateProgress();
   // #endregion NAVEGACIÓN Y DESMONTAJE
 })();
