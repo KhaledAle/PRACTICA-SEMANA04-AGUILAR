@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Laboratorio interactivo de animacion Canvas 2D para la Semana 04.">
+  <title>Laboratorio Canvas | Semana 04</title>
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <main class="app-shell">
+    <header class="page-header">
+      <div>
+        <p class="eyebrow">PRACTICA · SEMANA 04</p>
+        <h1>Laboratorio de movimiento</h1>
+        <p class="intro">Explora un sistema de particulas controlado por tiempo delta y un loop Canvas 2D.</p>
+      </div>
+      <div class="status-chip" aria-live="polite">
+        <span class="status-dot" aria-hidden="true"></span>
+        <span id="statusText">Animacion activa</span>
+      </div>
+    </header>
+
+    <section class="workspace" aria-label="Laboratorio interactivo">
+      <div class="canvas-panel">
+        <div class="canvas-toolbar">
+          <span class="panel-kicker">Canvas 2D / requestAnimationFrame</span>
+          <span class="metric" id="fpsText">FPS --</span>
+        </div>
+        <div class="canvas-frame">
+          <canvas id="animationCanvas" aria-label="Animacion de particulas en Canvas 2D">
+            Tu navegador no soporta Canvas.
+          </canvas>
+        </div>
+        <p class="canvas-hint">Haz clic dentro del campo para crear una rafaga de particulas.</p>
+      </div>
+
+      <aside class="controls-panel" aria-labelledby="controlsTitle">
+        <div class="panel-heading">
+          <p class="panel-kicker">Panel DOM</p>
+          <h2 id="controlsTitle">Controles del sistema</h2>
+        </div>
+
+        <form id="controlsForm" novalidate>
+          <label class="control-group" for="particleCount">
+            <span class="control-label">Particulas iniciales</span>
+            <span class="control-value" id="particleCountValue">42</span>
+            <input id="particleCount" name="particleCount" type="range" min="8" max="120" value="42">
+          </label>
+
+          <label class="control-group" for="speed">
+            <span class="control-label">Velocidad</span>
+            <span class="control-value" id="speedValue">1.0x</span>
+            <input id="speed" name="speed" type="range" min="0.2" max="2.5" step="0.1" value="1">
+          </label>
+
+          <label class="control-group" for="accentColor">
+            <span class="control-label">Color de acento</span>
+            <input id="accentColor" name="accentColor" type="color" value="#f4b942">
+          </label>
+
+          <div class="button-row">
+            <button class="button button-primary" id="toggleButton" type="button">Pausar</button>
+            <button class="button button-quiet" id="resetButton" type="button">Reiniciar</button>
+          </div>
+          <p class="validation-message" id="validationMessage" role="alert" aria-live="polite"></p>
+        </form>
+
+        <dl class="stats-list">
+          <div>
+            <dt>Frames renderizados</dt>
+            <dd id="frameCount">0</dd>
+          </div>
+          <div>
+            <dt>Particulas activas</dt>
+            <dd id="activeParticles">42</dd>
+          </div>
+          <div>
+            <dt>Estado del loop</dt>
+            <dd id="loopState">RUNNING</dd>
+          </div>
+        </dl>
+      </aside>
+    </section>
+
+    <footer class="page-footer">
+      <span>Vanilla JavaScript · sin librerias externas</span>
+      <span>Scope · closures · DOM · Canvas · rendimiento</span>
+    </footer>
+  </main>
+</body>
+</html>
